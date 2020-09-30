@@ -94,7 +94,7 @@ class ChartContainerRenderObject<D> extends RenderCustomPaint
   DateTime? _lastConfigurationChangeTime;
 
   /// The minimum time required before the next configuration change.
-  static const configurationChangeThresholdMs = 500;
+  static const configurationChangeThresholdMs = 0;
 
   void reconfigure(ChartContainer<D> config, BuildContext context) {
     _chartState = config.chartState;
