@@ -101,14 +101,13 @@ class SelectNearest<D> implements ChartBehavior<D> {
 
   bool _delaySelect = false;
 
-  SelectNearest(
-      {this.selectionModelType = SelectionModelType.info,
-      this.expandToDomain = true,
-      this.selectAcrossAllSeriesRendererComponents = true,
-      this.selectClosestSeries = true,
-      this.eventTrigger = SelectionTrigger.hover,
-      this.maximumDomainDistancePx,
-      this.hoverEventDelay}) {
+  SelectNearest({this.selectionModelType = SelectionModelType.info,
+    this.expandToDomain = true,
+    this.selectAcrossAllSeriesRendererComponents = true,
+    this.selectClosestSeries = true,
+    this.eventTrigger = SelectionTrigger.hover,
+    this.maximumDomainDistancePx,
+    this.hoverEventDelay}) {
     // Setup the appropriate gesture listening.
     switch (eventTrigger) {
       case SelectionTrigger.tap:
@@ -133,6 +132,7 @@ class SelectNearest<D> implements ChartBehavior<D> {
       case SelectionTrigger.longPressHold:
         _listener = GestureListener(
             onTapTest: _onTapTest,
+            onTap: _onCustomTap,
             onLongPress: _onLongPressSelect,
             onDragStart: _onSelect,
             onDragUpdate: _onSelect,
@@ -144,8 +144,8 @@ class SelectNearest<D> implements ChartBehavior<D> {
             onHover: hoverEventDelay == null
                 ? _onSelect
                 : throttle<Point<double>, bool>(_onSelect,
-                    delay: Duration(milliseconds: hoverEventDelay),
-                    defaultReturn: false));
+                delay: Duration(milliseconds: hoverEventDelay),
+                defaultReturn: false));
         break;
     }
   }
@@ -159,6 +159,17 @@ class SelectNearest<D> implements ChartBehavior<D> {
   bool _onLongPressSelect(Point<double> chartPoint) {
     _delaySelect = false;
     return _onSelect(chartPoint);
+  }
+
+  bool _onCustomTap(Point<double> chartPoint, [double ignored]) {
+    // If the selection is delayed (waiting for long press), then quit early.
+    if (_delaySelect) {
+      return false;
+    }
+
+    return _chart
+        .getSelectionModel(selectionModelType)
+        .updateSelection(<SeriesDatum<D>>[], <ImmutableSeries<D>>[]);
   }
 
   bool _onSelect(Point<double> chartPoint, [double ignored]) {
@@ -193,7 +204,7 @@ class SelectNearest<D> implements ChartBehavior<D> {
             // copy of the list by domain distance because we do not want to
             // re-order the actual return values here.
             final sortedSeriesDatumList =
-                List<SeriesDatum<D>>.from(seriesDatumList);
+            List<SeriesDatum<D>>.from(seriesDatumList);
             sortedSeriesDatumList.sort((a, b) =>
                 a.datum.domainDistance.compareTo(b.datum.domainDistance));
             seriesList.add(sortedSeriesDatumList.first.series);
@@ -263,7 +274,7 @@ class SelectNearest<D> implements ChartBehavior<D> {
               addDatum = domainLowerBound == nearestDomain ||
                   domainUpperBound == nearestDomain ||
                   ((domainLowerBound as DateTime)
-                          .isBefore(nearestDomain as DateTime) &&
+                      .isBefore(nearestDomain as DateTime) &&
                       (nearestDomain as DateTime)
                           .isBefore(domainUpperBound as DateTime));
             }
