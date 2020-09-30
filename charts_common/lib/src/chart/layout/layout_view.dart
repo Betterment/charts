@@ -43,7 +43,6 @@ enum LayoutPosition {
 /// chance of custom behaviors, renderers, etc. from breaking if we need to
 /// re-order these components internally.
 class LayoutViewPaintOrder {
-  // Draw range annotations beneath axis grid lines.
   static const rangeAnnotation = 21;
   // Axis elements form the "base layer" of all components on the chart. Domain
   // axes are drawn on top of measure axes to ensure that the domain axis line
