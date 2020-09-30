@@ -101,13 +101,15 @@ class SelectNearest<D> implements ChartBehavior<D> {
 
   bool _delaySelect = false;
 
-  SelectNearest({this.selectionModelType = SelectionModelType.info,
+  SelectNearest({
+    this.selectionModelType = SelectionModelType.info,
     this.expandToDomain = true,
     this.selectAcrossAllSeriesRendererComponents = true,
     this.selectClosestSeries = true,
     this.eventTrigger = SelectionTrigger.hover,
     this.maximumDomainDistancePx,
-    this.hoverEventDelay}) {
+    this.hoverEventDelay,
+  }) {
     // Setup the appropriate gesture listening.
     switch (eventTrigger) {
       case SelectionTrigger.tap:
@@ -144,8 +146,8 @@ class SelectNearest<D> implements ChartBehavior<D> {
             onHover: hoverEventDelay == null
                 ? _onSelect
                 : throttle<Point<double>, bool>(_onSelect,
-                delay: Duration(milliseconds: hoverEventDelay),
-                defaultReturn: false));
+                    delay: Duration(milliseconds: hoverEventDelay),
+                    defaultReturn: false));
         break;
     }
   }
@@ -204,7 +206,7 @@ class SelectNearest<D> implements ChartBehavior<D> {
             // copy of the list by domain distance because we do not want to
             // re-order the actual return values here.
             final sortedSeriesDatumList =
-            List<SeriesDatum<D>>.from(seriesDatumList);
+                List<SeriesDatum<D>>.from(seriesDatumList);
             sortedSeriesDatumList.sort((a, b) =>
                 a.datum.domainDistance.compareTo(b.datum.domainDistance));
             seriesList.add(sortedSeriesDatumList.first.series);
@@ -274,7 +276,7 @@ class SelectNearest<D> implements ChartBehavior<D> {
               addDatum = domainLowerBound == nearestDomain ||
                   domainUpperBound == nearestDomain ||
                   ((domainLowerBound as DateTime)
-                      .isBefore(nearestDomain as DateTime) &&
+                          .isBefore(nearestDomain as DateTime) &&
                       (nearestDomain as DateTime)
                           .isBefore(domainUpperBound as DateTime));
             }
