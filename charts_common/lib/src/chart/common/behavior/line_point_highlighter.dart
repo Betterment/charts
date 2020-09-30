@@ -495,7 +495,7 @@ class _LinePointLayoutView<D> extends LayoutView {
     }
 
     // Draw the highlight shapes on top of all follow lines.
-    for (_PointRendererElement<D> pointElement in points) {
+    for (_PointRendererElement<D> pointElement in points.reversed) {
       if (pointElement.point.x == null || pointElement.point.y == null) {
         continue;
       }
