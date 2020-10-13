@@ -134,7 +134,11 @@ class SelectNearest<D> implements ChartBehavior<D> {
       case SelectionTrigger.longPressHold:
         _listener = GestureListener(
             onTapTest: _onTapTest,
-            onTap: _onCustomTap,
+            onTap: hoverEventDelay == null
+                ? _onCustomTap
+                : throttle<Point<double>, bool>(_onCustomTap,
+                    delay: Duration(milliseconds: hoverEventDelay),
+                    defaultReturn: false),
             onLongPress: _onLongPressSelect,
             onDragStart: _onSelect,
             onDragUpdate: _onSelect,
