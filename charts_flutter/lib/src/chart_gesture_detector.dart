@@ -15,6 +15,7 @@
 
 import 'dart:async' show Timer;
 import 'dart:math' show Point;
+
 import 'package:flutter/material.dart'
     show
         BuildContext,
@@ -30,7 +31,7 @@ import 'chart_container.dart' show ChartContainer, ChartContainerRenderObject;
 import 'util.dart' show getChartContainerRenderObject;
 
 // From https://docs.flutter.io/flutter/gestures/kLongPressTimeout-constant.html
-const Duration _kLongPressTimeout = const Duration(milliseconds: 500);
+const Duration _kLongPressTimeout = const Duration(milliseconds: 250);
 
 class ChartGestureDetector {
   bool _listeningForLongPress;
