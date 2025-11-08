@@ -18,7 +18,7 @@ dependencies:
     git:
       url: https://github.com/Betterment/charts.git
       path: charts_common
-      ref: master
+      ref: c33c1a3f21a15034f8b196e0167cd64212f37637
   # charts_common:
   #   path: ../charts_common/
   collection: ^1.14.5
