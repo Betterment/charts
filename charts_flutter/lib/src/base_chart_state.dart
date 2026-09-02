@@ -146,6 +146,7 @@ class BaseChartState<D> extends State<BaseChart<D>>
 
   @override
   void dispose() {
+    _chartGestureDetector?.dispose();
     _animationController.dispose();
     _behaviorAnimationControllers
         .forEach((_, controller) => controller.dispose());

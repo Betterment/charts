@@ -48,7 +48,13 @@ class ChartGestureDetector {
   makeWidget(BuildContext context, ChartContainer chartContainer,
       Set<GestureType> desiredGestures) {
     _containerResolver = () {
-      final renderObject = context.findRenderObject()!;
+      // Only reachable in release builds. findRenderObject() asserts on a
+      // defunct element in debug and profile; once asserts are stripped it
+      // returns null instead.
+      final renderObject = context.findRenderObject();
+      if (renderObject == null) {
+        return null;
+      }
 
       return getChartContainerRenderObject(renderObject as RenderBox);
     };
@@ -75,6 +81,10 @@ class ChartGestureDetector {
 
   void onTapDown(TapDownDetails d) {
     final container = _containerResolver();
+    if (container == null) {
+      return;
+    }
+
     final localPosition = container.globalToLocal(d.globalPosition);
     _lastTapPoint = new Point(localPosition.dx, localPosition.dy);
     container.gestureProxy.onTapTest(_lastTapPoint!);
@@ -92,6 +102,10 @@ class ChartGestureDetector {
     _longPressTimer?.cancel();
 
     final container = _containerResolver();
+    if (container == null) {
+      return;
+    }
+
     final localPosition = container.globalToLocal(d.globalPosition);
     _lastTapPoint = new Point(localPosition.dx, localPosition.dy);
     container.gestureProxy.onTap(_lastTapPoint!);
@@ -99,6 +113,10 @@ class ChartGestureDetector {
 
   void onLongPress() {
     final container = _containerResolver();
+    if (container == null) {
+      return;
+    }
+
     container.gestureProxy.onLongPress(_lastTapPoint!);
   }
 
@@ -106,6 +124,10 @@ class ChartGestureDetector {
     _longPressTimer?.cancel();
 
     final container = _containerResolver();
+    if (container == null) {
+      return;
+    }
+
     final localPosition = container.globalToLocal(d.focalPoint);
     _lastTapPoint = new Point(localPosition.dx, localPosition.dy);
 
@@ -118,6 +140,10 @@ class ChartGestureDetector {
     }
 
     final container = _containerResolver();
+    if (container == null) {
+      return;
+    }
+
     final localPosition = container.globalToLocal(d.focalPoint);
     _lastTapPoint = new Point(localPosition.dx, localPosition.dy);
     _lastScale = d.scale;
@@ -131,11 +157,23 @@ class ChartGestureDetector {
     }
 
     final container = _containerResolver();
+    if (container == null) {
+      return;
+    }
 
     container.gestureProxy
         .onDragEnd(_lastTapPoint!, _lastScale!, d.velocity.pixelsPerSecond.dx);
   }
+
+  /// Cancels the pending long press timer.
+  ///
+  /// This is the fix for the unmounted-element crash. The null check in
+  /// [_containerResolver] is release-mode defence-in-depth behind it.
+  void dispose() {
+    _longPressTimer?.cancel();
+    _longPressTimer = null;
+  }
 }
 
 // Exposed for testing.
-typedef ChartContainerRenderObject _ContainerResolver();
+typedef ChartContainerRenderObject? _ContainerResolver();
